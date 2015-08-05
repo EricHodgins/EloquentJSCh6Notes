@@ -80,7 +80,7 @@ for (var i = 0; i < 5; i++) {
    rows.push(row);
 }
  
-console.log(rows);
+
 // console.log(drawTable(rows));
 
 
@@ -88,7 +88,7 @@ console.log(rows);
 
 // 1 Make an array of arrays (holding Textcell objects) like this [[Textcell,Textcell,Textcell,Textcell,Textcell]....5 times].  Each Textcell holds a 
 // an array of either "   " or "##". You can get this when you cal the Textcell.text property.  For example:
-// var t = new Textcell("##"); ----> t.text will output ['##']
+// var t = new Textcell("##"); ----> t.text will output ['##'].  This essentially is a bunch of TextCell objects.
 
 var rows2 = [];
 for (var i = 0; i < 5; i++) {
@@ -105,4 +105,46 @@ for (var i = 0; i < 5; i++) {
 }
 
 
-console.log(rows2);
+//console.log(rows2); // take a look
+
+// 2 Now we go to drawTable.  Let's understand the rowHeights and colWidths functions.  Should be fun.
+// First rowHeights and helper method minHeight.
+
+TextCell.prototype.minHeight = function() {
+  return this.text.length;
+};
+
+function rowHeights(rows) {
+  return rows.map(function(row) {  
+      console.log(row);    
+    return row.reduce(function(max, cell) {      
+      var m = Math.max(max, cell.minHeight());
+      console.log(m);
+      return m;
+    }, 0);
+  });
+}
+
+console.log(rowHeights(rows2));
+
+// First goes to map.  map will iterate overall the elements in the rows array.  So a row is an array of TextCell's.  Then on Each
+// TextCell array reduce is used on it.  Reduce will 'reduce' the array to one value.  This is where minHeight is useful.
+// It returns the length of that particular TextCell value. in this case it's alway one.  Because the text property only holds 1 element.
+// so rowHeights returns an array with a min height for each row.  in this case it's [1,1,1,1,1]
+
+// Now colWidths
+
+TextCell.prototype.minWidth = function() {
+  return this.text.reduce(function(width, line) {
+    return Math.max(width, line.length);
+  }, 0);
+};
+
+function colWidths(rows) {
+  return rows[0].map(function(_, i) {
+    return rows.reduce(function(max, row) {
+      return Math.max(max, row[i].minWidth());
+    }, 0);
+  });
+}
+
