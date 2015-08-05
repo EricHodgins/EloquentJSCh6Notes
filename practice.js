@@ -97,7 +97,7 @@ for (var i = 0; i < 5; i++) {
      if ((i + j) % 2 === 0) {
         tmp.push(new TextCell("##"));
      } else {
-        tmp.push(new TextCell("  "));
+        tmp.push(new TextCell("--"));
      }
    }
 
@@ -116,16 +116,14 @@ TextCell.prototype.minHeight = function() {
 
 function rowHeights(rows) {
   return rows.map(function(row) {  
-      console.log(row);    
     return row.reduce(function(max, cell) {      
       var m = Math.max(max, cell.minHeight());
-      console.log(m);
       return m;
     }, 0);
   });
 }
 
-console.log(rowHeights(rows2));
+//console.log(rowHeights(rows2));
 
 // First goes to map.  map will iterate overall the elements in the rows array.  So a row is an array of TextCell's.  Then on Each
 // TextCell array reduce is used on it.  Reduce will 'reduce' the array to one value.  This is where minHeight is useful.
@@ -147,4 +145,83 @@ function colWidths(rows) {
     }, 0);
   });
 }
+
+
+// Loops through all the values in the first element.  that's why rows[0] is there. 
+//console.log(colWidths(rows)); // this prints out [2,2,2,2,2]
+
+
+// now lets look at drawTable
+
+function repeat(string, times) {
+  var result = "";
+  for (var i = 0; i < times; i++)
+    result += string;
+  return result;
+}
+
+TextCell.prototype.draw = function(width, height) {
+  var result = [];
+  for (var i = 0; i < height; i++) {
+    var line = this.text[i] || "";
+    result.push(line + repeat(" ", width - line.length));
+  }
+  return result;
+};
+
+
+// Remember rows = [[Textcell,Textcell,Textcell,Textcell,Textcell]....5 times].
+
+
+function drawTable(rows) {
+  var heights = rowHeights(rows);
+  var widths = colWidths(rows);
+
+  function drawLine(blocks, lineNo) {
+    return blocks.map(function(block) {
+      return block[lineNo];
+    }).join(" ");
+  }
+
+  function drawRow(row, rowNum) {
+    var blocks = row.map(function(cell, colNum) {  
+      return cell.draw(widths[colNum], heights[rowNum]);
+    });
+    console.log(blocks);
+    return blocks[0].map(function(_, lineNo) {
+      return drawLine(blocks, lineNo);
+    }).join("\n");
+  }
+
+  return rows.map(drawRow).join("\n");
+}
+
+
+// heights = [1,1,1,1,1]
+// widths =  [2,2,2,2,2]
+
+
+console.log(drawTable(rows2));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
