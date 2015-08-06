@@ -110,6 +110,10 @@ for (var i = 0; i < 5; i++) {
 // 2 Now we go to drawTable.  Let's understand the rowHeights and colWidths functions.  Should be fun.
 // First rowHeights and helper method minHeight.
 
+function TextCell(text) {
+  this.text = text.split("\n"); // split puts the text into an array here. "hello" becomes ["hello"] for exmaple.
+}
+
 TextCell.prototype.minHeight = function() {
   return this.text.length;
 };
@@ -187,7 +191,6 @@ function drawTable(rows) {
     var blocks = row.map(function(cell, colNum) {  
       return cell.draw(widths[colNum], heights[rowNum]);
     });
-    console.log(blocks);
     return blocks[0].map(function(_, lineNo) {
       return drawLine(blocks, lineNo);
     }).join("\n");
@@ -199,9 +202,79 @@ function drawTable(rows) {
 
 // heights = [1,1,1,1,1]
 // widths =  [2,2,2,2,2]
+// blocks = [["##"], ["  "], ["##"]...] for each row.
+
+//console.log(drawTable(rows2));
 
 
-console.log(drawTable(rows2));
+// Now let's move on to more crazy data... MOUNTAIN data
+function UnderlinedCell(inner) {
+  this.inner = inner;
+};
+UnderlinedCell.prototype.minWidth = function() {
+  return this.inner.minWidth();
+};
+UnderlinedCell.prototype.minHeight = function() {
+  return this.inner.minHeight() + 1;
+};
+UnderlinedCell.prototype.draw = function(width, height) {
+  return this.inner.draw(width, height - 1)
+    .concat([repeat("-", width)]);
+};
+
+function dataTable(data) {
+  var keys = Object.keys(data[0]);
+  var headers = keys.map(function(name) {
+    return new UnderlinedCell(new TextCell(name));
+  });
+  var body = data.map(function(row) {
+    return keys.map(function(name) {
+      return new TextCell(String(row[name]));
+    });
+  });
+  return [headers].concat(body);
+}
+
+console.log(drawTable(dataTable(MOUNTAINS)));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
