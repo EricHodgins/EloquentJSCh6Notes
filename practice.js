@@ -120,7 +120,7 @@ TextCell.prototype.minHeight = function() {
 
 function rowHeights(rows) {
   return rows.map(function(row) {  
-    return row.reduce(function(max, cell) {      
+    return row.reduce(function(max, cell) {    
       var m = Math.max(max, cell.minHeight());
       return m;
     }, 0);
@@ -182,6 +182,7 @@ function drawTable(rows) {
   var widths = colWidths(rows);
 
   function drawLine(blocks, lineNo) {
+    console.log(blocks);
     return blocks.map(function(block) {
       return block[lineNo];
     }).join(" ");
@@ -232,13 +233,20 @@ function dataTable(data) {
       return new TextCell(String(row[name]));
     });
   });
+
   return [headers].concat(body);
 }
 
+//console.log(dataTable(MOUNTAINS));
 console.log(drawTable(dataTable(MOUNTAINS)));
 
+// headers in put into an array [headers] because you need an array to access reduce.
+// So now you have UnderlinedCell concat with TextCells.  Now you can use minWidth and minHeight. So each UnderlineCell contains inner.  Which holds a TextCell.
+// Each TextCell for Underline holds the Header value. So.."name", "height" ...
+// NOw for rowHeights & colWidths you can call the min functions which go to the UnderlineCell class.  But by callling this.inner.minWidth() for example actually
+// runs the TextCell minWidth method.  Because inner itself is a TextCell.  It returns that and then back to Undderline it adds 1.
 
-
+// Essentially end up with this ["name height country", "--- --- -----"].join("\n") for drawrow.
 
 
 
